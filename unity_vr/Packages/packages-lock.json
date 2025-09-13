@@ -7,6 +7,13 @@
       "dependencies": {},
       "hash": "d3b2be29d6eec3a8a05799001acaa38c37e6a596"
     },
+    "com.meta.xr.sdk.core": {
+      "version": "78.0.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
     "com.unity.burst": {
       "version": "1.8.24",
       "depth": 2,
