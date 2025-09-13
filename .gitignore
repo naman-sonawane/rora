@@ -1,1 +1,5 @@
 /mesh/images
+/mesh/temp_frames
+meshbackend/temp_frames/
+*.mp4
+*.ppm
