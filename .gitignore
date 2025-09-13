@@ -3,3 +3,5 @@
 meshbackend/temp_frames/
 *.mp4
 *.ppm
+.venv
+.env 
