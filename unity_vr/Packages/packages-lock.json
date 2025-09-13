@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.donghok.meshimporter": {
+      "version": "https://github.com/eastskykang/UnityMeshImporter.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "d3b2be29d6eec3a8a05799001acaa38c37e6a596"
+    },
     "com.unity.burst": {
       "version": "1.8.24",
       "depth": 2,
