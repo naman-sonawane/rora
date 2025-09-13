@@ -7,7 +7,7 @@ public class ButtonClick : MonoBehaviour
 
     public void OnButtonClick()
     {
-        string meshFile = "Assets/teapot.obj";
+        string meshFile = "Assets/Axle shaft.ply";
         var ob = MeshImporter.Load(meshFile);
         ob.transform.SetParent(meshRoot.transform, false);
     }
