@@ -5,7 +5,7 @@ def test_converter():
     """Test the video converter with a sample video"""
     
     # Initialize converter
-    converter = VideoToFramesConverter(fps=10, output_format="ppm")
+    converter = VideoToFramesConverter(fps=10, output_format="jpg")
     
     # Check if FFmpeg is available
     if not converter.check_ffmpeg():
@@ -13,7 +13,7 @@ def test_converter():
         return
     
     # Example usage - replace with your actual video file
-    video_path = "sample_video.mp4"  # Change this to your video file
+    video_path = "IMG_2613.mov"  # Change this to your video file
     
     if not os.path.exists(video_path):
         print(f"❌ Video file not found: {video_path}")

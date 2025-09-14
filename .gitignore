@@ -3,5 +3,10 @@
 meshbackend/temp_frames/
 *.mp4
 *.ppm
+<<<<<<< HEAD
 /mesh/images_jpg
 mesh/alicevision-complete-fixed.gz
+=======
+.venv
+.env 
+>>>>>>> c7d6f47aa1050886685890dd2b8361fb7da62502

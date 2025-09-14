@@ -1,11 +1,14 @@
 {
   "dependencies": {
+    "com.donghok.meshimporter": "https://github.com/eastskykang/UnityMeshImporter.git",
     "com.meta.xr.sdk.core": "78.0.0",
+    "com.meta.xr.sdk.voice": "78.0.0",
     "com.unity.collab-proxy": "2.9.3",
     "com.unity.feature.development": "1.0.2",
     "com.unity.inputsystem": "1.14.2",
     "com.unity.learn.iet-framework": "5.0.2",
     "com.unity.multiplayer.center": "1.0.0",
+    "com.unity.nuget.newtonsoft-json": "3.2.1",
     "com.unity.render-pipelines.universal": "17.2.0",
     "com.unity.timeline": "1.8.9",
     "com.unity.xr.androidxr-openxr": "1.0.1",
