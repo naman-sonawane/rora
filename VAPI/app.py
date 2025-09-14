@@ -11,8 +11,6 @@ from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
-# from vapi_python import Vapi
-
 # ====== CONFIG (env) ======
 # export GEMINI_API_KEY=...
 # export VAPI_API_KEY=...
@@ -31,8 +29,6 @@ genai.configure(api_key=GEMINI_API_KEY)
 # ====== FASTAPI ======
 app = FastAPI(title="Live Narration Backend", version="1.0")
 
-# vapi = Vapi(api_key=VAPI_API_KEY)
-
 # allow local dev from Unity/localhost
 app.add_middleware(
     CORSMiddleware,
@@ -49,8 +45,6 @@ class StartByPathIn(BaseModel):
     style: Optional[str] = "warm, concise, present tense"
 
 class StartOut(BaseModel):
-    session_id: str
-    vapi_session_raw: dict
     narration_text: str
 
 # ====== GEMINI HELPERS ======
@@ -79,44 +73,15 @@ def summarize_video_with_gemini_file(file_path: str, style: str) -> str:
     model = genai.GenerativeModel("gemini-1.5-pro")
     prompt = (
         "Describe this video like a cinematic VR narrator. "
-        "Write 1–3 short sentences, present tense, grounded in what’s visible/obvious; "
-        f"style: {style}. No lists, no timestamps—just a flowing narration."
+        "Write 1-3 short sentences, present tense, grounded in what's visible/obvious; "
+        f"style: {style}. No lists, no introduction, no timestamps—just a flowing narration."
     )
     res = model.generate_content([uploaded, prompt])
     text = (res.text or "").strip()
     if not text:
-        text = "We’re stepping into the scene. Light and motion bring a familiar moment back to life."
+        text = "We're stepping into the scene. Light and motion bring a familiar moment back to life."
     print(f"Gemini narration: {text}")
     return text
-
-# ====== VAPI HELPERS ======
-def vapi_create_session(narration_text: str, user_name: Optional[str]) -> dict:
-    """
-    Creates a Vapi realtime session using the Python client.
-    """
-    try:
-        # Create session using the VAPI Python client
-        session = vapi.sessions.create(
-            assistant_id=VAPI_ASSISTANT_ID,
-            assistant_overrides={
-                "firstMessage": narration_text
-            }
-        )
-        return session.__dict__ if hasattr(session, '__dict__') else session
-    except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Vapi session create failed: {str(e)}")
-
-def vapi_send_chat(session_id: str, text: str) -> dict:
-    """Sends a message into an existing Vapi session using the Python client."""
-    try:
-        # Send message using the VAPI Python client
-        response = vapi.sessions.send_message(
-            session_id=session_id,
-            message=text
-        )
-        return response.__dict__ if hasattr(response, '__dict__') else response
-    except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Vapi chat failed: {str(e)}")
 
 # ====== ROUTES ======
 @app.post("/start-narration", response_model=StartOut)
@@ -124,42 +89,19 @@ def start_narration_by_path(payload: StartByPathIn):
     """
     Dev-friendly route: assume the video already exists on the server filesystem.
     """
+    print("Getting narration")
     narration = summarize_video_with_gemini_file(payload.file_path, payload.style or "warm")
-    vapi_session = vapi_create_session(narration, payload.user_name)
-    session_id = vapi_session.get("id") or vapi_session.get("_id") or vapi_session.get("sessionId") or ""
-    if not session_id:
-        raise HTTPException(status_code=500, detail=f"Unexpected Vapi response: {json.dumps(vapi_session)[:500]}")
-    return StartOut(session_id=session_id, vapi_session_raw=vapi_session, narration_text=narration)
 
-@app.post("/start-narration-upload", response_model=StartOut)
-def start_narration_upload(file: UploadFile = File(...), user_name: str = Form("Guest"), style: str = Form("warm, concise, present tense")):
-    """
-    Production-style route: upload a video file as multipart/form-data.
-    """
-    # Save to a temp file
-    with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file.filename or "")[-1]) as tmp:
-        tmp.write(file.file.read())
-        tmp_path = tmp.name
-
-    try:
-        narration = summarize_video_with_gemini_file(tmp_path, style or "warm")
-        vapi_session = vapi_create_session(narration, user_name)
-        session_id = vapi_session.get("id") or vapi_session.get("_id") or vapi_session.get("sessionId") or ""
-        if not session_id:
-            raise HTTPException(status_code=500, detail=f"Unexpected Vapi response: {json.dumps(vapi_session)[:500]}")
-        return StartOut(session_id=session_id, vapi_session_raw=vapi_session, narration_text=narration)
-    finally:
-        try:
-            os.remove(tmp_path)
-        except Exception:
-            pass
+    return StartOut(narration_text=narration)
 
 @app.post("/send-message")
 def send_message(session_id: str = Form(...), text: str = Form(...)):
     """
-    Optional helper: push a follow-up line into the live session.
+    Optional helper: push a follow-up line using Gemini
     Unity can call this when the player hits a trigger (e.g., 'Describe the photo wall').
     """
-    return vapi_send_chat(session_id, text)
+    pass
+
+
 
 # Run: uvicorn app:app --reload --port 8000

@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using TMPro; // optional for on-screen logs
 using Newtonsoft.Json.Linq;
+using Meta.WitAi.TTS.Utilities;
 
 public class VapiLiveNarration : MonoBehaviour
 {
@@ -19,6 +20,9 @@ public class VapiLiveNarration : MonoBehaviour
 
     [Header("UI (optional)")]
     public TextMeshProUGUI StatusText;
+
+    [Header("TTS (optional)")]
+    public TTSSpeaker ttsSpeaker;
 
     private string sessionId;
     private AudioSource audioSource;
@@ -63,21 +67,10 @@ public class VapiLiveNarration : MonoBehaviour
         }
 
         var json = JObject.Parse(req.downloadHandler.text);
-        sessionId = json.Value<string>("session_id");
-        var vapiSessionRaw = json["vapi_session_raw"] as JObject;
-        Log($"Got session: {sessionId}");
+        var narration = json["narration_text"].ToString();
+        Log($"Narration: {narration}");
 
-        // ===== CONNECT TO VAPI WEBRTC =====
-        // Your Vapi org exposes a signaling endpoint / credentials with the session.
-        // Depending on your WebRTC plugin, you'll:
-        // 1) Create a PeerConnection
-        // 2) Exchange SDP/ICE with Vapi (sessionId + signaling URL/token)
-        // 3) On remote audio track, route to AudioSource and Play()
-
-        // Example call (pseudo; replace with your chosen plugin):
-        // yield return StartCoroutine(ConnectToVapiWebRTC(sessionId, vapiSessionRaw));
-
-        Log("If your assistant has a firstMessage, it will start speaking as soon as WebRTC connects.");
+        ttsSpeaker.Speak(narration);
     }
 
     // Optional: forward a message mid-experience (e.g., player enters a room)
