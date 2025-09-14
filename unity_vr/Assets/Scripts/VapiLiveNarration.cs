@@ -33,6 +33,7 @@ public class VapiLiveNarration : MonoBehaviour
 
     public void StartNarration()
     {
+        Log("Starting");
         StartCoroutine(StartNarrationCo());
     }
 
