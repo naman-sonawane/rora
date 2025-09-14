@@ -11,7 +11,7 @@ from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
-from vapi_python import Vapi
+# from vapi_python import Vapi
 
 # ====== CONFIG (env) ======
 # export GEMINI_API_KEY=...
@@ -31,7 +31,7 @@ genai.configure(api_key=GEMINI_API_KEY)
 # ====== FASTAPI ======
 app = FastAPI(title="Live Narration Backend", version="1.0")
 
-vapi = Vapi(api_key=VAPI_API_KEY)
+# vapi = Vapi(api_key=VAPI_API_KEY)
 
 # allow local dev from Unity/localhost
 app.add_middleware(
